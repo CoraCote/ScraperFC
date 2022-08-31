@@ -1307,6 +1307,9 @@ class FBRef:
         home_team_id   = team_els[0]['href'].split('/')[3]
         away_team_name = team_els[1].getText()
         away_team_id   = team_els[1]['href'].split('/')[3]
+        
+        #### Scores ####
+        scores = soup.find('div', {'class': 'scorebox'}).find_all('div', {'class': 'score'})
 
         #### Formations ####
         lineups = [pd.read_html(str(el.find('table')))[0] \
@@ -1392,8 +1395,8 @@ class FBRef:
             lineups[1].columns[0].split('(')[-1].replace(')','').strip() 
             if len(lineups)>0 else None
         )
-        match['Home Goals'] = player_stats['Home']['Summary'][('Performance','Gls')].values[-1]
-        match['Away Goals'] = player_stats['Away']['Summary'][('Performance','Gls')].values[-1]
+        match['Home Goals'] = int(scores[0].getText()) if scores[0].getText().isdecimal() else None
+        match['Away Goals'] = int(scores[1].getText()) if scores[1].getText().isdecimal() else None
         match['Home Ast'] = player_stats['Home']['Summary'][('Performance','Ast')].values[-1]
         match['Away Ast'] = player_stats['Away']['Summary'][('Performance','Ast')].values[-1]
         match['Home xG']   = (
